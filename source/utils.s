@@ -1,21 +1,23 @@
 .arm
-.text
+.section .text
+
 
 @ Shamelessly based from Steveice's memchunkhax2 repo. I miss those old days
 @ Credits to TuxSH for finding this leak
 @ Please don't expect KTM for this
 .global svcCreateSemaphoreKAddr
-.type 	svcCreateSemaphoreKAddr, %function
+.type   svcCreateSemaphoreKAddr, %function
 svcCreateSemaphoreKAddr:
-	str r0, [sp, #-4]!
-	str r3, [sp, #-4]!
-	svc 0x15
-	ldr r3, [sp], #4
-	sub r2, r2, #4								@ Fix the kobject ptr
-	str r2, [r3]
-	ldr r3, [sp], #4
-	str r1, [r3]
-	bx lr
+    str r0, [sp, #-4]!
+    str r3, [sp, #-4]!
+    svc 0x15
+    ldr r3, [sp], #4
+    sub r2, r2, #4                                @ Fix the kobject ptr
+    str r2, [r3]
+    ldr r3, [sp], #4
+    str r1, [r3]
+    bx lr
+
 
 @ Here for debug/dev purposes
 .global svc_7b
