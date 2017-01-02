@@ -14,7 +14,7 @@
 //if condition 'x' is true, print string 'y' and exit
 #define PANIC(x,y) if (x){\
                        error = y;\
-				       goto exit;\
+                       goto exit;\
                    }
 #define DEBUG(x)   if (debug) printf(" %s\n", x);
 
@@ -98,8 +98,8 @@ int main(int argc, char **argv){
 	
 	DEBUG("Setting framebuffers...");
 	*((u32*)(payload_buf + 0xFFE00)) = (u32)gfxGetFramebuffer(GFX_TOP, GFX_LEFT, NULL, NULL) + 0xC000000;
-    *((u32*)(payload_buf + 0xFFE04)) = (u32)gfxGetFramebuffer(GFX_TOP, GFX_RIGHT, NULL, NULL) + 0xC000000;
-    *((u32*)(payload_buf + 0xFFE08)) = (u32)gfxGetFramebuffer(GFX_BOTTOM, 0, NULL, NULL) + 0xC000000;
+	*((u32*)(payload_buf + 0xFFE04)) = (u32)gfxGetFramebuffer(GFX_TOP, GFX_RIGHT, NULL, NULL) + 0xC000000;
+	*((u32*)(payload_buf + 0xFFE08)) = (u32)gfxGetFramebuffer(GFX_BOTTOM, 0, NULL, NULL) + 0xC000000;
     gfxSwapBuffers();
 	
 	/* Gain ARM11 Control */
