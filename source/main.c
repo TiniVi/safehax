@@ -3,8 +3,6 @@
 #include <string.h>
 #include <malloc.h>
 
-#include "svchax.h"
-#include "waithax.h"
 #include "arm11.h"
 
 #define FCRAM(x)   (void *)((kver < SYSTEM_VERSION(2, 44, 6)) ? (0xF0000000 + x) : (0xE0000000 + x)) //0x20000000
@@ -71,10 +69,8 @@ int main(int argc, char **argv){
 	sdmcInit();
 	romfsInit();
 	
-	kver = osGetKernelVersion();
-	
 	hidScanInput();
-	if (hidKeysDown() & KEY_B || (kver > SYSTEM_VERSION(2, 50, 11) && kver < SYSTEM_VERSION(2, 52, 0))){ //Hold B to enable prints (auto enables for waithax)
+	if (hidKeysDown() & KEY_B){ //Hold B to enable prints
 		consoleInit(GFX_TOP, NULL);
 		printf("\n\x1b[37;1m");
 		debug = true;
@@ -102,37 +98,14 @@ int main(int argc, char **argv){
 	*((u32*)(payload_buf + 0xFFE08)) = (u32)gfxGetFramebuffer(GFX_BOTTOM, 0, NULL, NULL) + 0xC000000;
 	gfxSwapBuffers();
 	
-	/* Gain ARM11 Control */
+	/* Patch ARM11 */ //ARM11 hax should be run ahead of time, svcBackdoor is expected to be accessible
 	
-	if (kver <= SYSTEM_VERSION(2, 50, 11)){ //TODO: Check if k11 has already been exploited (svc + srv access + some form of backdoor)
-		DEBUG("SVCHAX...");
-		PANIC(svchax_init(true), "SVCHAX FAILED!");
-		
-		DEBUG("Patching ARM11...");
-		svcBackdoor(patch_arm11_codeflow);
-		
-	} else if (kver > SYSTEM_VERSION(2, 50, 11) && kver < SYSTEM_VERSION(2, 52, 0)){
-		DEBUG("WAITHAX...");
-		PANIC(!waithax_init(true), "WAITHAX FAILED!");
-		
-		DEBUG("Patching ARM11...");
-		waithax_backdoor((void(*)())patch_arm11_codeflow);
-		waithax_cleanup();
-		/*
-	} else if (kver == SYSTEM_VERSION(2, 52, 0)){ //I tried adding fasthax support and svchax suddenly stopped working fml
-		DEBUG("FASTHAX...");
-		PANIC(!fasthax_init(true), "FASTHAX FAILED!");
-		
-		DEBUG("Patching ARM11...");
-		svcMyBackdoor(patch_arm11_codeflow);
-		*/
-	} else PANIC(true, "NO ARM11 EXPLOIT AVAILABLE!"); //RIP
-	/*
-	DEBUG("Patching ARM11..."); //Ideally, the above should install svcBackdoor (like this (?) https://gist.github.com/TiniVi/5c1a8421ed65a384f1bcb542b4eeaff1)
-	svcBackdoor(patch_arm11_codeflow);
-	*/
-	PANIC(backdoor_res, "FAILED TO PATCH THE KERNEL!");
+	kver = osGetKernelVersion();
 	PANIC(pmInit(), "PM INIT FAILED!");
+	
+	DEBUG("Patching ARM11...");
+	svcBackdoor(patch_arm11_codeflow);
+	PANIC(backdoor_res, "FAILED TO PATCH THE KERNEL!");
 	
 	/* Launch SAFE_MODE ARM9 */
 	

@@ -29,9 +29,9 @@ include $(DEVKITARM)/3ds_rules
 #---------------------------------------------------------------------------------
 TARGET			:=	$(notdir $(CURDIR))
 BUILD			:=	build
-SOURCES			:=	source source/fasthax
+SOURCES			:=	source
 DATA			:=	data
-INCLUDES		:=	include include/fasthax
+INCLUDES		:=	source
 ROMFS			:=	romfs
 
 APP_TITLE		:=	safehax
