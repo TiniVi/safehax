@@ -68,6 +68,7 @@ int main(int argc, char **argv){
 	aptInit();
 	sdmcInit();
 	romfsInit();
+	PANIC(pmInit(), "PM INIT FAILED!");
 	
 	hidScanInput();
 	if (hidKeysDown() & KEY_B){ //Hold B to enable prints
@@ -101,7 +102,6 @@ int main(int argc, char **argv){
 	/* Patch ARM11 */ //ARM11 hax should be run ahead of time, pm and svcBackdoor is expected to be accessible
 	
 	kver = osGetKernelVersion();
-	PANIC(pmInit(), "PM INIT FAILED!");
 	
 	DEBUG("Patching ARM11...");
 	svcBackdoor(patch_arm11_codeflow);
@@ -128,7 +128,7 @@ exit:
 			
 			gspWaitForVBlank();
 		}
-	} else if (debug) { //fix framebuffer on exit
+	} else if (debug){ //fix framebuffer on exit
 		consoleClear();
 		gfxSetScreenFormat(GFX_TOP, GSP_BGR8_OES);
 		gfxSetFramebufferInfo(GFX_TOP, 0);
