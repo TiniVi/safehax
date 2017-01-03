@@ -33,12 +33,12 @@ s32 patch_arm11_codeflow(void){
 	
 	memcpy(FCRAM(0x3F00000), payload_buf, payload_size);
 	memcpy(FCRAM(0x3FFF000), payload_buf + 0xFF000, 0xE0C);
-	memcpy(AXIWRAM(0xF4C80), arm11_start, (u32)arm11_end - (u32)arm11_start);
+	memcpy(AXIWRAM(0xF4CC0), arm11_start, (u32)arm11_end - (u32)arm11_start);
 	
 	for (unsigned int i = 0; i < 0x2000/4; i++){
 		if (KMEMORY[i] == 0xE12FFF14 && KMEMORY[i+2] == 0xE3A01000){ //hook arm11 launch
 			KMEMORY[i+3] = 0xE51FF004; //LDR PC, [PC,#-4]
-			KMEMORY[i+4] = 0x1FFF4C80;
+			KMEMORY[i+4] = 0x1FFF4CC0;
 			backdoor_res = 0;
 			break;
 		}
@@ -99,7 +99,7 @@ int main(int argc, char **argv){
 	*((u32*)(payload_buf + 0xFFE08)) = (u32)gfxGetFramebuffer(GFX_BOTTOM, 0, NULL, NULL) + 0xC000000;
 	gfxSwapBuffers();
 	
-	/* Patch ARM11 */ //ARM11 hax should be run ahead of time, pm and svcBackdoor is expected to be accessible
+	/* Patch ARM11 */ //ARM11 hax should be run ahead of time, pm and svcBackdoor are expected to be accessible
 	
 	kver = osGetKernelVersion();
 	
