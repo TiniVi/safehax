@@ -44,6 +44,12 @@ s32 patch_arm11_codeflow(void){
 		}
 	}
 	
+	__asm__ volatile ( //flush & invalidate the caches
+		"MOV R0, #0\n"
+		"MCR P15, 0, R0, C7, C10, 0\n"
+		"MCR P15, 0, R0, C7, C5, 0"
+	);
+	
 	return backdoor_res;
 }
 
