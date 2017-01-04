@@ -5,6 +5,8 @@ Basically, it works like Brahma's arm9 bootstrap, but for a wider range of firmw
 
 Before running this, run some k11 exploit that will enable access to srvs and svcBackdoor. This is required.
 
+NOTE: There is currently an issue that requires a Game Cartridge to be inserted into the console. Safehax will crash otherwise.
+
 ## How it works:
 
 Because 'SAFE_MODE' firm is out of date (~3.0 on O3DS, ~8.1 on N3DS), it's still vulnerable to firmlaunch-hax, which allows us to overwrite the arm9 entry pointer on firmlaunch. Knowing this, we can trigger a firmlaunch, so that 'SAFE_MODE' arm9 can run, then we sync up with arm9 until we can send another firmlaunch request to it. From there, we can do firmlaunch-hax like normal and gain arm9 code execution.
