@@ -90,7 +90,8 @@ int main(int argc, char **argv){
 	PANIC(!payload_buf, "FAILED TO ALLOCATE MEMORY!");
 	
 	DEBUG("Reading ARM9 payload...");
-	payload_size = FileRead(payload_buf, "sdmc:/arm9.bin", 0xFF000); //MINOR: Large payloads seem to crash when being copied to 0x23F00000
+	payload_size = FileRead(payload_buf, "sdmc:/safehaxpayload.bin", 0xFF000); //MINOR: Large payloads seem to crash when being copied to 0x23F00000
+	if (!payload_size) payload_size = FileRead(payload_buf, "sdmc:/arm9.bin", 0xFF000);
 	if (!payload_size) payload_size = FileRead(payload_buf, "sdmc:/arm9loaderhax.bin", 0xFF000);
 	PANIC(!payload_size, "FAILED TO READ THE ARM9 PAYLOAD!");
 	
