@@ -1,7 +1,13 @@
 # safehax/safefirmhax
 ## What this is:
 
-Basically, it works like Brahma's arm9 bootstrap, but for a wider range of firmwares. It will try to load 'arm9.bin' (alternatively 'arm9loaderhax.bin') from the SD card root, and from there it'll load it into memory @ 0x23F00000. This is useful for a number of things, including installing otpless arm9loaderhax on N3DS, dumping your nand on the newer firmwares, and running CFW.
+Basically, it works like Brahma's arm9 bootstrap, but for a wider range of firmwares. It will attempt to load one of the listed payloads from the SD card root: 
+
+ * `safehaxpayload.bin`
+ * `arm9.bin`
+ * `arm9loaderhax.bin`
+
+These files are ordered by load priority, so if `safehaxpayload.bin` is present it will not try and load either of the other payloads. After this, it'll load the payload it finds into memory @ 0x23F00000. This is useful for a number of things, including installing otpless arm9loaderhax on N3DS, dumping your nand on the newer firmwares, and running CFW.
 
 Before running this, run some k11 exploit that will enable access to srvs and svcBackdoor. This is required.
 
