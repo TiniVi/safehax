@@ -3,8 +3,6 @@
 #include <string.h>
 #include <malloc.h>
 
-#include "arm11.h"
-
 #define FCRAM(x)   (void *)((kver < SYSTEM_VERSION(2, 44, 6)) ? (0xF0000000 + x) : (0xE0000000 + x)) //0x20000000
 #define AXIWRAM(x) (void *)((kver < SYSTEM_VERSION(2, 44, 6)) ? (0xEFF00000 + x) : (0xDFF00000 + x)) //0x1FF00000
 #define KMEMORY    ((u32 *)AXIWRAM(0xF4000))                                                         //0x1FFF4000
@@ -33,12 +31,11 @@ s32 patch_arm11_codeflow(void){
 	
 	memcpy(FCRAM(0x3F00000), payload_buf, payload_size);
 	memcpy(FCRAM(0x3FFF000), payload_buf + 0xFF000, 0xE0C);
-	memcpy(AXIWRAM(0xF4CC0), arm11_start, (u32)arm11_end - (u32)arm11_start);
 	
 	for (unsigned int i = 0; i < 0x2000/4; i++){
 		if (KMEMORY[i] == 0xE12FFF14 && KMEMORY[i+2] == 0xE3A01000){ //hook arm11 launch
 			KMEMORY[i+3] = 0xE51FF004; //LDR PC, [PC,#-4]
-			KMEMORY[i+4] = 0x1FFF4CC0;
+			KMEMORY[i+4] = 0x23FFF000;
 			backdoor_res = 0;
 			break;
 		}
