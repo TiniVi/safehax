@@ -24,8 +24,10 @@ unsigned int pxi_recv(void){
 }
 
 void _start(void){
-	pxi_send(0x44846);
+	/* Init */
+	pxi_send(0x44846); //Signal ARM9 for the initial SAFE_MODE FIRMLaunch
 	
+	/* KSync */
 	ARM9SYNC[0] = 1; //SAFE_MODE Kernel9 @ 0x0801B148 & SAFE_MODE Kernel11 @ 0x1FFDB498
 	while (ARM9SYNC[0] != 2);
 	ARM9SYNC[0] = 1;
@@ -44,6 +46,7 @@ void _start(void){
 	PXI_SYNC11[1] = 2;
 	while (PXI_SYNC11[0] != 2);
 	
+	/* FIRMLaunch */
 	pxi_send(0); //pxi:mc //https://github.com/patois/Brahma/blob/master/source/arm11.s#L11 & SAFE_MODE pxi @ 0x100618
 	PXI_SYNC11[3] |= 0x40;
 	pxi_send(0x10000); //pxi shutdown
