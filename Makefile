@@ -31,7 +31,7 @@ TARGET			:=	$(notdir $(CURDIR))
 BUILD			:=	build
 SOURCES			:=	source
 DATA			:=	data
-INCLUDES		:=	source
+INCLUDES		:=	include
 ROMFS			:=	romfs
 
 APP_TITLE		:=	safehax

@@ -42,6 +42,7 @@ void _start(void){
 	while (!PXI_FULL) pxi_send(0); //SAFE_MODE Process9 @ 0x0806C594 & SAFE_MODE pxi @ 0x101388
 	PXI_SYNC11[1] = 1;
 	while (PXI_SYNC11[0] != 1);
+	
 	while (!PXI_EMPTY) pxi_recv();
 	PXI_SYNC11[1] = 2;
 	while (PXI_SYNC11[0] != 2);

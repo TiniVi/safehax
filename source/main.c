@@ -3,6 +3,9 @@
 #include <string.h>
 #include <malloc.h>
 
+#include "global_backdoor.h"
+#include "kernel_patches.h"
+
 #define FCRAM(x)   (void *)((kver < SYSTEM_VERSION(2, 44, 6)) ? (0xF0000000 + x) : (0xE0000000 + x)) //0x20000000
 #define AXIWRAM(x) (void *)((kver < SYSTEM_VERSION(2, 44, 6)) ? (0xEFF00000 + x) : (0xDFF00000 + x)) //0x1FF00000
 #define KMEMORY    ((u32 *)AXIWRAM(0xF4000))                                                         //0x1FFF4000
@@ -71,6 +74,12 @@ int main(int argc, char **argv){
 	aptInit();
 	sdmcInit();
 	romfsInit();
+	
+	if (checkSvcGlobalBackdoor()){
+		initsrv_allservices();
+		patch_svcaccesstable();
+    }
+	
 	PANIC(pmInit(), "PM INIT FAILED!");
 	
 	hidScanInput();
@@ -103,7 +112,7 @@ int main(int argc, char **argv){
 	*((u32*)(payload_buf + 0xFFE08)) = (u32)gfxGetFramebuffer(GFX_BOTTOM, 0, NULL, NULL) + 0xC000000;
 	gfxSwapBuffers();
 	
-	/* Patch ARM11 */ //ARM11 hax should be run ahead of time, svcBackdoor is expected to be accessible
+	/* Patch ARM11 */
 	
 	kver = osGetKernelVersion();
 	
