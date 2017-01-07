@@ -78,7 +78,7 @@ int main(int argc, char **argv){
 	if (checkSvcGlobalBackdoor()){
 		initsrv_allservices();
 		patch_svcaccesstable();
-    }
+	}
 	
 	PANIC(pmInit(), "PM INIT FAILED!");
 	

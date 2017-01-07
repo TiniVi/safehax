@@ -9,7 +9,7 @@ Basically, it works like Brahma's arm9 bootstrap, but for a wider range of firmw
 
 These files are ordered by load priority, so if `safehaxpayload.bin` is present it will not try and load either of the other payloads. After this, it'll load the payload it finds into memory @ 0x23F00000. This is useful for a number of things, including installing otpless arm9loaderhax on N3DS, dumping your nand on the newer firmwares, and running CFW.
 
-Before running this, run some k11 exploit that will enable access to srvs and svcBackdoor. This is required.
+A Kernel11 exploit must be run ahead of time that either enables all srv/svc access, or gives us the global svc 0x30 backdoor.
 
 NOTE: There is currently an issue that requires a Game Cartridge to be inserted into the console. Safehax will crash otherwise.
 
