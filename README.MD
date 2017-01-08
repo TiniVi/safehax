@@ -11,8 +11,6 @@ These files are ordered by load priority, so if `safehaxpayload.bin` is present 
 
 A Kernel11 exploit must be run ahead of time that either enables all srv/svc access, or gives us the global svc 0x30 backdoor.
 
-NOTE: There is currently an issue that requires a Game Cartridge to be inserted into the console. Safehax will crash otherwise.
-
 ## How it works:
 
 Because 'SAFE_MODE' firm is out of date (~3.0 on O3DS, ~8.1 on N3DS), it's still vulnerable to firmlaunch-hax, which allows us to overwrite the arm9 entry pointer on firmlaunch. Knowing this, we can trigger a firmlaunch, so that 'SAFE_MODE' arm9 can run, then we sync up with arm9 until we can send another firmlaunch request to it. From there, we can do firmlaunch-hax like normal and gain arm9 code execution.
@@ -23,4 +21,5 @@ Because 'SAFE_MODE' firm is out of date (~3.0 on O3DS, ~8.1 on N3DS), it's still
  - 'Everyone' - For also finding the [vuln](https://3dbrew.org/wiki/3DS_System_Flaws#Process9).
  - [shinyquagsire23](https://github.com/shinyquagsire23)/[patois](https://github.com/patois)(/etc?) - The [firmlaunch-hax](https://github.com/patois/Brahma) code that this uses snippets from, and was used as reference.
  - [Mrrraou](https://github.com/Mrrraou)/[nedwill](https://github.com/nedwill) - [Snippets](https://gist.github.com/Mrrraou/c74572c04d13c586d363bf64eba0d3a1) for the changes described [here](https://github.com/Mrrraou/waithax/releases).
+ - [zoogie](https://gbatemp.net/members/zoogie.357147/) - Finding a fix for the cartridge bug.
  - [3DBrew](https://www.3dbrew.org/wiki/Main_Page)'s Users - VAddrs, and other useful information in general.

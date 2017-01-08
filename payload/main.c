@@ -55,6 +55,8 @@ void _start(void){
 	pxi_recv();
 	pxi_recv();
 	
+	for (volatile int i = 0x80000; i; i--); //delay (Credit to zoogie on temp)
+	
 	pxi_send(0x44836); //SAFE_MODE Process9 @ 0x08086788 & SAFE_MODE Kernel11 @ 0xFFF620C0
 	while (pxi_recv() != 0x964536);
 	pxi_send(0x44837);
