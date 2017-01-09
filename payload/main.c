@@ -51,19 +51,15 @@ void _start(void){
 	pxi_send(0); //pxi:mc //https://github.com/patois/Brahma/blob/master/source/arm11.s#L11 & SAFE_MODE pxi @ 0x100618
 	PXI_SYNC11[3] |= 0x40;
 	pxi_send(0x10000); //pxi shutdown
-	pxi_recv();
-	pxi_recv();
-	pxi_recv();
 	
-	for (volatile int i = 0x80000; i; i--); //delay (Credit to zoogie on temp)
-	
-	pxi_send(0x44836); //SAFE_MODE Process9 @ 0x08086788 & SAFE_MODE Kernel11 @ 0xFFF620C0
-	while (pxi_recv() != 0x964536);
+	do pxi_send(0x44836); //SAFE_MODE Process9 @ 0x08086788 & SAFE_MODE Kernel11 @ 0xFFF620C0
+	while (PXI_EMPTY || (pxi_recv() != 0x964536));
 	pxi_send(0x44837);
 	
 	pxi_send(FW_TID_HIGH);
 	pxi_send(FW_TID_LOW);
 	
+	/* FIRMLaunchHax */
 	ARM11Entry = 0;
 	ARM9_TEST = 0xDEADC0DE;
 	pxi_send(0x44846);
