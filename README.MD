@@ -20,6 +20,6 @@ Because 'SAFE_MODE' firm is out of date (~3.0 on O3DS, ~8.1 on N3DS), it's still
  - [Normmatt](https://github.com/Normmatt) - Finding the vuln, helping work out an issue during KSync.
  - 'Everyone' - For also finding the [vuln](https://3dbrew.org/wiki/3DS_System_Flaws#Process9).
  - [shinyquagsire23](https://github.com/shinyquagsire23)/[patois](https://github.com/patois)(/etc?) - The [firmlaunch-hax](https://github.com/patois/Brahma) code that this uses snippets from, and was used as reference.
- - [Mrrraou](https://github.com/Mrrraou)/[nedwill](https://github.com/nedwill) - [Snippets](https://gist.github.com/Mrrraou/c74572c04d13c586d363bf64eba0d3a1) for the changes described [here](https://github.com/Mrrraou/waithax/releases).
+ - [Mrrraou](https://github.com/Mrrraou)/[nedwill](https://github.com/nedwill) - [Snippets](https://gist.github.com/Mrrraou/c74572c04d13c586d363bf64eba0d3a1) for the changes described [here](https://github.com/nedwill/fasthax#for-homebrew-application-developers).
  - [zoogie](https://gbatemp.net/members/zoogie.357147/) - Finding a fix for the cartridge bug.
  - [3DBrew](https://www.3dbrew.org/wiki/Main_Page)'s Users - VAddrs, and other useful information in general.

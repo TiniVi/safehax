@@ -32,7 +32,7 @@ extern void gfxSetFramebufferInfo(gfxScreen_t screen, u8 id);
 s32 patch_arm11_codeflow(void){
 	__asm__ volatile ( "CPSID AIF\n" "CLREX" );
 	
-	memcpy(FCRAM(0x3F00000), payload_buf, payload_size);
+	memcpy(FCRAM(0x3F00000), payload_buf, payload_size); //Huge payloads seem to crash when being copied
 	memcpy(FCRAM(0x3FFF000), payload_buf + 0xFF000, 0xE0C);
 	
 	for (unsigned int i = 0; i < 0x2000/4; i++){
@@ -96,13 +96,14 @@ int main(int argc, char **argv){
 	PANIC(!payload_buf, "FAILED TO ALLOCATE MEMORY!");
 	
 	DEBUG("Reading ARM9 payload...");
-	payload_size = FileRead(payload_buf, "sdmc:/safehaxpayload.bin", 0xFF000); //MINOR: Large payloads seem to crash when being copied to 0x23F00000
+	payload_size = FileRead(payload_buf, "romfs:/arm9.bin", 0xFF000); //check for a bundled arm9 payload
+	if (!payload_size) payload_size = FileRead(payload_buf, "sdmc:/safehaxpayload.bin", 0xFF000);
 	if (!payload_size) payload_size = FileRead(payload_buf, "sdmc:/arm9.bin", 0xFF000);
 	if (!payload_size) payload_size = FileRead(payload_buf, "sdmc:/arm9loaderhax.bin", 0xFF000);
 	PANIC(!payload_size, "FAILED TO READ THE ARM9 PAYLOAD!");
 	
 	DEBUG("Reading ARM11 payload...");
-	PANIC(!FileRead(payload_buf + 0xFF000, "romfs:/arm11.bin", 0xE00), "FAILED TO READ THE ARM11 PAYLOAD!"); //If this fails, it's either an old hbl, or I'm retarded
+	PANIC(!FileRead(payload_buf + 0xFF000, "romfs:/arm11.bin", 0xE00), "FAILED TO READ THE ARM11 PAYLOAD!");
 	
 	/* Setup Framebuffers */ //https://github.com/mid-kid/CakeBrah/blob/master/source/brahma.c#L364
 	
