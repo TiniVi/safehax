@@ -19,7 +19,7 @@
 
 static Result pm_res = -1;
 static s32 backdoor_res = -1;
-static char *error = "FAILED TO LAUNCH SAFE_MODE ARM9!";
+static char *error = "FAILED TO RELOAD!";
 
 static void *payload_buf = NULL;
 static u32 payload_size = 0;
@@ -121,10 +121,10 @@ int main(int argc, char **argv){
 	svcBackdoor(patch_arm11_codeflow);
 	PANIC(backdoor_res, "FAILED TO PATCH THE KERNEL!");
 	
-	/* Launch SAFE_MODE ARM9 */
+	/* Relaunch Firmware */ //This will clear the global flag preventing SAFE_MODE launch.
 	
-	DEBUG("Launching SAFE_MODE ARM9...");
-	pm_res = PM_LaunchFIRMSetParams(3, 0, NULL);
+	DEBUG("Reloading firmware...");
+	pm_res = PM_LaunchFIRMSetParams(2, 0, NULL);
 	
 exit:
 	if (pm_res){

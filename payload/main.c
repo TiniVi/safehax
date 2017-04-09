@@ -24,40 +24,42 @@ unsigned int pxi_recv(void){
 }
 
 void _start(void){
-	/* Init */
-	pxi_send(0x44846); //Signal ARM9 for the initial SAFE_MODE FIRMLaunch
-	
-	/* KSync */
-	ARM9SYNC[0] = 1; //SAFE_MODE Kernel9 @ 0x0801B148 & SAFE_MODE Kernel11 @ 0x1FFDB498
-	while (ARM9SYNC[0] != 2);
-	ARM9SYNC[0] = 1;
-	while (ARM9SYNC[0] != 2);
-	
-	if (ARM9SYNC[1] == 3){
+	for (volatile int i = 0; i < 2; i++){ //The global SAFE_MODE flag is cleared now, let's launch SAFE_MODE!
+		/* Init */
+		pxi_send(0x44846); //Signal ARM9 to complete the initial FIRMLaunches
+		
+		/* KSync */
+		ARM9SYNC[0] = 1; //SAFE_MODE Kernel9 @ 0x0801B148 & SAFE_MODE Kernel11 @ 0x1FFDB498
+		while (ARM9SYNC[0] != 2);
 		ARM9SYNC[0] = 1;
 		while (ARM9SYNC[0] != 2);
-		ARM9SYNC[0] = 3;
+		
+		if (ARM9SYNC[1] == 3){
+			ARM9SYNC[0] = 1;
+			while (ARM9SYNC[0] != 2);
+			ARM9SYNC[0] = 3;
+		}
+		
+		while (!PXI_FULL) pxi_send(0); //SAFE_MODE Process9 @ 0x0806C594 & SAFE_MODE pxi @ 0x101388
+		PXI_SYNC11[1] = 1;
+		while (PXI_SYNC11[0] != 1);
+		
+		while (!PXI_EMPTY) pxi_recv();
+		PXI_SYNC11[1] = 2;
+		while (PXI_SYNC11[0] != 2);
+		
+		/* FIRMLaunch */
+		pxi_send(0); //pxi:mc //https://github.com/patois/Brahma/blob/master/source/arm11.s#L11 & SAFE_MODE pxi @ 0x100618
+		PXI_SYNC11[3] |= 0x40;
+		pxi_send(0x10000); //pxi shutdown
+		
+		do pxi_send(0x44836); //SAFE_MODE Process9 @ 0x08086788 & SAFE_MODE Kernel11 @ 0xFFF620C0
+		while (PXI_EMPTY || (pxi_recv() != 0x964536));
+		pxi_send(0x44837);
+		
+		pxi_send(FW_TID_HIGH);
+		pxi_send(FW_TID_LOW);
 	}
-	
-	while (!PXI_FULL) pxi_send(0); //SAFE_MODE Process9 @ 0x0806C594 & SAFE_MODE pxi @ 0x101388
-	PXI_SYNC11[1] = 1;
-	while (PXI_SYNC11[0] != 1);
-	
-	while (!PXI_EMPTY) pxi_recv();
-	PXI_SYNC11[1] = 2;
-	while (PXI_SYNC11[0] != 2);
-	
-	/* FIRMLaunch */
-	pxi_send(0); //pxi:mc //https://github.com/patois/Brahma/blob/master/source/arm11.s#L11 & SAFE_MODE pxi @ 0x100618
-	PXI_SYNC11[3] |= 0x40;
-	pxi_send(0x10000); //pxi shutdown
-	
-	do pxi_send(0x44836); //SAFE_MODE Process9 @ 0x08086788 & SAFE_MODE Kernel11 @ 0xFFF620C0
-	while (PXI_EMPTY || (pxi_recv() != 0x964536));
-	pxi_send(0x44837);
-	
-	pxi_send(FW_TID_HIGH);
-	pxi_send(FW_TID_LOW);
 	
 	/* FIRMLaunchHax */
 	ARM11Entry = 0;
