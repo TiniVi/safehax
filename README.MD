@@ -1,7 +1,9 @@
 # safehax/safefirmhax
 ## What this is:
 
-Basically, it works like Brahma's arm9 bootstrap, but for a wider range of firmwares. It will attempt to load one of the listed payloads from the SD card root: 
+_**THIS DOES NOT WORK ON SYSTEM FIRMWARES ABOVE 11.3**_
+
+Basically, safehax works like Brahma's arm9 bootstrap, but for a wider range of firmwares. It will attempt to load one of the listed payloads from the SD card root: 
 
  * `safehaxpayload.bin`
  * `arm9.bin`

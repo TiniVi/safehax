@@ -32,7 +32,7 @@ extern void gfxSetFramebufferInfo(gfxScreen_t screen, u8 id);
 s32 patch_arm11_codeflow(void){
 	__asm__ volatile ( "CPSID AIF\n" "CLREX" );
 	
-	memcpy(FCRAM(0x3F00000), payload_buf, payload_size); //Huge payloads seem to crash when being copied
+	memcpy(FCRAM(0x3F00000), payload_buf, payload_size); //Huge payloads seem to crash when being copied (?)
 	memcpy(FCRAM(0x3FFF000), payload_buf + 0xFF000, 0xE0C);
 	
 	for (unsigned int i = 0; i < 0x2000/4; i++){
@@ -75,6 +75,10 @@ int main(int argc, char **argv){
 	sdmcInit();
 	romfsInit();
 	
+	kver = osGetKernelVersion();
+	if (kver > SYSTEM_VERSION(2, 53, 0)) //11.4^
+		PANIC(true, "UNSUPPORTED FIRMWARE!");
+	
 	if (checkSvcGlobalBackdoor()){
 		initsrv_allservices();
 		patch_svcaccesstable();
@@ -83,7 +87,7 @@ int main(int argc, char **argv){
 	PANIC(pmInit(), "PM INIT FAILED!");
 	
 	hidScanInput();
-	if (hidKeysDown() & KEY_B){ //Hold B to enable prints
+	if (hidKeysDown() & KEY_B){ //Hold B to enable debugging
 		consoleInit(GFX_TOP, NULL);
 		printf("\n\x1b[37;1m");
 		debug = true;
@@ -108,17 +112,22 @@ int main(int argc, char **argv){
 	/* Setup Framebuffers */ //https://github.com/mid-kid/CakeBrah/blob/master/source/brahma.c#L364
 	
 	DEBUG("Setting framebuffers...");
-	*((u32*)(payload_buf + 0xFFE00)) = (u32)gfxGetFramebuffer(GFX_TOP, GFX_LEFT, NULL, NULL) + 0xC000000;
-	*((u32*)(payload_buf + 0xFFE04)) = (u32)gfxGetFramebuffer(GFX_TOP, GFX_RIGHT, NULL, NULL) + 0xC000000;
-	*((u32*)(payload_buf + 0xFFE08)) = (u32)gfxGetFramebuffer(GFX_BOTTOM, 0, NULL, NULL) + 0xC000000;
+	*((u32 *)(payload_buf + 0xFFE00)) = (u32)gfxGetFramebuffer(GFX_TOP, GFX_LEFT, NULL, NULL) + 0xC000000;
+	*((u32 *)(payload_buf + 0xFFE04)) = (u32)gfxGetFramebuffer(GFX_TOP, GFX_RIGHT, NULL, NULL) + 0xC000000;
+	*((u32 *)(payload_buf + 0xFFE08)) = (u32)gfxGetFramebuffer(GFX_BOTTOM, 0, NULL, NULL) + 0xC000000;
 	gfxSwapBuffers();
 	
 	/* Patch ARM11 */
 	
-	kver = osGetKernelVersion();
-	
 	DEBUG("Patching ARM11...");
-	svcBackdoor(patch_arm11_codeflow);
+	
+	*((bool *)(payload_buf + 0xFFE40)) = debug; //for safehax post-reload color-fill-based debugging
+	
+	if (checkSvcGlobalBackdoor()) //use this where applicable
+		svcGlobalBackdoor(patch_arm11_codeflow);
+	else
+		svcBackdoor(patch_arm11_codeflow);
+	
 	PANIC(backdoor_res, "FAILED TO PATCH THE KERNEL!");
 	
 	/* Relaunch Firmware */ //This will clear the global flag preventing SAFE_MODE launch.

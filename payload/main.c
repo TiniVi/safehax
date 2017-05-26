@@ -13,6 +13,10 @@
 #define PXI_FULL    (PXI_CNT11 & 2)
 #define PXI_EMPTY   (PXI_CNT11 & 0x100)
 
+#define LCDCFG_FILL *((volatile unsigned int *)0x10202204)
+#define DEBUG_FLAG  *((volatile _Bool *)0x23FFFE40)
+#define DEBUG(c)    if (DEBUG_FLAG) LCDCFG_FILL = 0x01000000 | (c & 0xFFFFFF);
+
 void pxi_send(unsigned int cmd){
 	while (PXI_FULL);
 	PXI_SEND11 = cmd;
@@ -24,6 +28,8 @@ unsigned int pxi_recv(void){
 }
 
 void _start(void){
+	DEBUG(0xFF0000); //red
+	
 	for (volatile int i = 0; i < 2; i++){ //The global SAFE_MODE flag is cleared now, let's launch SAFE_MODE!
 		/* Init */
 		pxi_send(0x44846); //Signal ARM9 to complete the initial FIRMLaunches
@@ -33,6 +39,8 @@ void _start(void){
 		while (ARM9SYNC[0] != 2);
 		ARM9SYNC[0] = 1;
 		while (ARM9SYNC[0] != 2);
+		
+		DEBUG(0xFF7F00); //orange
 		
 		if (ARM9SYNC[1] == 3){
 			ARM9SYNC[0] = 1;
@@ -44,14 +52,20 @@ void _start(void){
 		PXI_SYNC11[1] = 1;
 		while (PXI_SYNC11[0] != 1);
 		
+		DEBUG(0xFFFF00); //yellow
+		
 		while (!PXI_EMPTY) pxi_recv();
 		PXI_SYNC11[1] = 2;
 		while (PXI_SYNC11[0] != 2);
+		
+		DEBUG(0x00FF00); //green
 		
 		/* FIRMLaunch */
 		pxi_send(0); //pxi:mc //https://github.com/patois/Brahma/blob/master/source/arm11.s#L11 & SAFE_MODE pxi @ 0x100618
 		PXI_SYNC11[3] |= 0x40;
 		pxi_send(0x10000); //pxi shutdown
+		
+		DEBUG(0x00FFFF); //cyan
 		
 		do pxi_send(0x44836); //SAFE_MODE Process9 @ 0x08086788 & SAFE_MODE Kernel11 @ 0xFFF620C0
 		while (PXI_EMPTY || (pxi_recv() != 0x964536));
@@ -59,7 +73,11 @@ void _start(void){
 		
 		pxi_send(FW_TID_HIGH);
 		pxi_send(FW_TID_LOW);
+		
+		DEBUG(0x0000FF); //blue
 	}
+	
+	DEBUG(0x7F00FF); //purple
 	
 	/* FIRMLaunchHax */
 	ARM11Entry = 0;
@@ -68,6 +86,8 @@ void _start(void){
 	
 	while (ARM9_TEST == 0xDEADC0DE); //wait for arm9 to start writing a new arm11 binary
 	ARM9Entry = 0x23F00000;
+	
+	LCDCFG_FILL = 0;
 	
 	while (!ARM11Entry);
 	((void (*)())ARM11Entry)();
