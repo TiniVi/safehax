@@ -14,7 +14,7 @@
 #define PXI_EMPTY   (PXI_CNT11 & 0x100)
 
 #define LCDCFG_FILL *((volatile unsigned int *)0x10202204)
-#define DEBUG_FLAG  *((volatile _Bool *)0x23FFFE40)
+#define DEBUG_FLAG  *((volatile _Bool *)0x23FFFE10)
 #define DEBUG(c)    if (DEBUG_FLAG) LCDCFG_FILL = 0x01000000 | (c & 0xFFFFFF);
 
 void pxi_send(unsigned int cmd){

@@ -33,7 +33,7 @@ s32 patch_arm11_codeflow(void){
 	__asm__ volatile ( "CPSID AIF\n" "CLREX" );
 	
 	memcpy(FCRAM(0x3F00000), payload_buf, payload_size); //Huge payloads seem to crash when being copied (?)
-	memcpy(FCRAM(0x3FFF000), payload_buf + 0xFF000, 0xE0C);
+	memcpy(FCRAM(0x3FFF000), payload_buf + 0xFF000, 0xE20);
 	
 	for (unsigned int i = 0; i < 0x2000/4; i++){
 		if (KMEMORY[i] == 0xE12FFF14 && KMEMORY[i+2] == 0xE3A01000){ //hook arm11 launch
@@ -121,7 +121,7 @@ int main(int argc, char **argv){
 	
 	DEBUG("Patching ARM11...");
 	
-	*((bool *)(payload_buf + 0xFFE40)) = debug; //for safehax post-reload color-fill-based debugging
+	*((bool *)(payload_buf + 0xFFE10)) = debug; //for safehax post-reload color-fill-based debugging
 	
 	if (checkSvcGlobalBackdoor()) //use this where applicable
 		svcGlobalBackdoor(patch_arm11_codeflow);
