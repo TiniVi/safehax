@@ -101,9 +101,12 @@ int main(int argc, char **argv){
 	
 	DEBUG("Reading ARM9 payload...");
 	payload_size = FileRead(payload_buf, "romfs:/arm9.bin", 0xFF000); //check for a bundled arm9 payload
+	payload_size = FileRead(payload_buf, "romfs:/boot.firm", 0xFF000); //check for a bundled firm payload
 	if (!payload_size) payload_size = FileRead(payload_buf, "sdmc:/safehaxpayload.bin", 0xFF000);
+	if (!payload_size) payload_size = FileRead(payload_buf, "sdmc:/safehaxpayload.firm", 0xFF000);
 	if (!payload_size) payload_size = FileRead(payload_buf, "sdmc:/arm9.bin", 0xFF000);
 	if (!payload_size) payload_size = FileRead(payload_buf, "sdmc:/arm9loaderhax.bin", 0xFF000);
+	if (!payload_size) payload_size = FileRead(payload_buf, "sdmc:/boot.firm", 0xFF000);
 	PANIC(!payload_size, "FAILED TO READ THE ARM9 PAYLOAD!");
 	
 	DEBUG("Reading ARM11 payload...");
