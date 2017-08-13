@@ -17,9 +17,6 @@
 #define DEBUG_FLAG  *((volatile _Bool *)0x23FFFE10)
 #define DEBUG(c)    if (DEBUG_FLAG) LCDCFG_FILL = 0x01000000 | (c & 0xFFFFFF);
 
-void _firmldr(void);
-void firmldr(void);
-
 void pxi_send(unsigned int cmd){
 	while (PXI_FULL);
 	PXI_SEND11 = cmd;
@@ -91,36 +88,8 @@ void _start(void){
 	while (ARM9_TEST == 0xDEADC0DE) //wait for arm9 to start writing a new arm11 binary
 		__asm__ volatile ("MCR P15, 0, %0, C7, C6, 0" :: "r"(reg)); //invalidate dcache
 	
-	ARM9Entry = (*((unsigned int *)0x23F00000) == 0x4D524946) ? (unsigned int)_firmldr : 0x23F00000; //check for magic 'FIRM'
-	
+	ARM9Entry = 0x23F00000;
 	LCDCFG_FILL = 0;
-	
 	while (!ARM11Entry);
 	((void (*)())ARM11Entry)();
-}
-
-#define FIRM ((unsigned int *)0x20001000) //luma firmload address
-
-void memcpy8(void *dst, void* src, unsigned int size){
-	for (int i = 0; i < size; i++)
-		((unsigned char *)dst)[i] = ((unsigned char *)src)[i];
-}
-
-void memcpy32(void *dst, void* src, unsigned int size){
-	for (int i = 0; i < size/4; i++)
-		((unsigned int *)dst)[i] = ((unsigned int *)src)[i];
-}
-
-void firmldr(void){ //TODO: disable lcd
-	memcpy32(FIRM, (void *)0x23F00000, 0xFF000);
-	
-	void *section_dst[4] = {(void *)FIRM[0x44/4], (void *)FIRM[0x74/4], (void *)FIRM[0xA4/4], (void *)FIRM[0xD4/4]};
-	
-	for (int i = 0; i < 4; i++){
-		if (section_dst[i])
-			memcpy8(section_dst[i], ((unsigned char*)FIRM) + FIRM[((i*0x30)+0x40)/4], FIRM[((i*0x30)+0x48)/4]);
-	}
-	
-	ARM11Entry = FIRM[0x8/4];
-	((void (*)())FIRM[0xC/4])();
 }

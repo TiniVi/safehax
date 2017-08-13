@@ -6,10 +6,8 @@ _**THIS DOES NOT WORK ON SYSTEM FIRMWARES ABOVE 11.3**_
 Basically, safehax works like Brahma's arm9 bootstrap, but for a wider range of firmwares. It will attempt to load one of the listed payloads from the SD card root: 
 
  * `safehaxpayload.bin`
- * `safehaxpayload.firm`
  * `arm9.bin`
  * `arm9loaderhax.bin`
- * `boot.firm`
 
 These files are ordered by load priority, so if `safehaxpayload.bin` is present it will not try and load either of the other payloads. After this, it'll load the payload it finds into memory @ 0x23F00000. This is useful for a number of things, including installing otpless arm9loaderhax on N3DS, dumping your nand on the newer firmwares, and running CFW.
 

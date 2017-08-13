@@ -99,15 +99,12 @@ int main(int argc, char **argv){
 	payload_buf = memalign(0x1000, 0x100000);
 	PANIC(!payload_buf, "FAILED TO ALLOCATE MEMORY!");
 	
-	DEBUG("Reading ARM9 payload...");
+	DEBUG("Reading payload...");
 	payload_size = FileRead(payload_buf, "romfs:/arm9.bin", 0xFF000); //check for a bundled arm9 payload
-	if (!payload_size) payload_size = FileRead(payload_buf, "romfs:/boot.firm", 0xFF000); //check for a bundled firm payload
 	if (!payload_size) payload_size = FileRead(payload_buf, "sdmc:/safehaxpayload.bin", 0xFF000);
-	if (!payload_size) payload_size = FileRead(payload_buf, "sdmc:/safehaxpayload.firm", 0xFF000);
 	if (!payload_size) payload_size = FileRead(payload_buf, "sdmc:/arm9.bin", 0xFF000);
 	if (!payload_size) payload_size = FileRead(payload_buf, "sdmc:/arm9loaderhax.bin", 0xFF000);
-	if (!payload_size) payload_size = FileRead(payload_buf, "sdmc:/boot.firm", 0xFF000);
-	PANIC(!payload_size, "FAILED TO READ THE ARM9 PAYLOAD!");
+	PANIC(!payload_size, "FAILED TO READ THE PAYLOAD!");
 	
 	DEBUG("Reading ARM11 payload...");
 	PANIC(!FileRead(payload_buf + 0xFF000, "romfs:/arm11.bin", 0xE00), "FAILED TO READ THE ARM11 PAYLOAD!");
